@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Leo Herzog",
+    "zone": "home",
+    "entity_id": "person.leo_herzog",
+    "zone_icon": "mdi:home"
+  },
+  {
+    "name": "Megan Herzog",
+    "zone": "home",
+    "entity_id": "person.megan_herzog",
+    "zone_icon": "mdi:home"
+  },
+  {
+    "name": "Milo Herzog",
+    "zone": "home",
+    "entity_id": "person.milo_herzog",
+    "zone_icon": "mdi:home"
+  },
+  {
+    "name": "Liza Herzog",
+    "zone": "home",
+    "entity_id": "person.liza_herzog",
+    "zone_icon": "mdi:home"
+  }
+]
