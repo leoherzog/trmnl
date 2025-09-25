@@ -1,0 +1,193 @@
+{% template title_bar %}
+<div class="title_bar">
+  <svg class="image image-stroke image--dither rounded--full" viewBox="0 0 24 24">
+    <path d="m11.936 2c-1.1206 0.0018117-2.2188 0.12471-3.2653 0.36557-3.1183 0.73218-5.5532 3.1697-6.2847 6.2911-0.51396 2.1933-0.51396 4.475 0 6.6684 0.73143 3.1214 3.1665 5.557 6.2847 6.2891 2.191 0.51445 4.4685 0.51445 6.6597 0 3.1184-0.73214 5.5533-3.1676 6.2847-6.2891 0.51393-2.1932 0.51393-4.4751 0-6.6684-0.73139-3.1214-3.1664-5.5588-6.2847-6.2911-1.1318-0.24812-2.2736-0.36738-3.3942-0.36557zm0.12304 1.0342c1.0408 0.0019 2.0624 0.11825 3.035 0.34212 2.7342 0.64198 4.87 2.7801 5.5113 5.5169 0.47747 2.0375 0.47747 4.1558 0 6.1933-0.64129 2.737-2.7773 4.875-5.5113 5.5169-2.0354 0.47796-4.1516 0.47796-6.187 0-2.7342-0.64194-4.87-2.7801-5.5113-5.5169-0.47745-2.0375-0.47745-4.1558 0-6.1933 0.64133-2.737 2.7773-4.875 5.5113-5.5169 1.0515-0.23147 2.1112-0.34402 3.1521-0.34212zm-3.0467 2.2072-3.0096 1.517s-0.00488 4.9557 0 7.4758c2.9533 1.4779 6.2357 3.12 9.0013 4.5042l2.9959-1.4994v-4.5003l-2.9959-1.4994v-1.4994l-2.9959-1.4994v-1.4994l-2.9959-1.4994zm0 0.84063 1.7519 0.87582-1.7519 0.90124-1.7519-0.90124zm-2.2478 1.4623 2.2478 1.1534v6.2011l-2.2478-1.1241zm5.2437 1.5366 1.7519 0.87582-1.7519 0.90124-1.7519-0.90124zm-2.2478 1.4623 2.2478 1.1534v3.3645c-0.0029 0.40982-0.0052 0.85478-0.0059 1.3353l-2.242-1.1222v-4.731zm5.2437 1.5366 1.7519 0.87582-1.7519 0.90124-1.7519-0.90124zm-2.2478 1.4623 2.2478 1.1534v3.2022l-2.2478-1.1241z"></path>
+  </svg>
+  <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
+  {% if showInstance %}
+  <span class="instance">{{ IDX_0.showTitle }}</span>
+  {% endif %}
+</div>
+{% endtemplate %}
+
+{% template main %}
+{% comment %}
+Main template for OP3 podcast analytics dashboard
+Parameters:
+- IDX_0: Episode data with downloads
+- IDX_1: Show download statistics
+- trmnl: TRMNL configuration
+- layout_size: 'full', 'half-horizontal', 'half-vertical', or 'quadrant'
+{% endcomment %}
+
+{% comment %} Extract statistics {% endcomment %}
+{% assign monthly_downloads = IDX_1.showDownloadCounts[IDX_0.showUuid].monthlyDownloads | default: 0 %}
+{% assign weekly_avg = IDX_1.showDownloadCounts[IDX_0.showUuid].weeklyAvgDownloads | default: 0 %}
+
+{% comment %} Prepare episode data for chart {% endcomment %}
+{% assign episodes = IDX_0.episodes | slice: 0, 5 %}
+
+<!-- Import Highcharts library -->
+<script src="https://usetrmnl.com/js/highcharts/12.3.0/highcharts.js"></script>
+<script src="https://usetrmnl.com/js/highcharts/12.3.0/pattern-fill.js"></script>
+
+<div class="view view--full">
+  <div class="layout layout--col gap--space-between">
+    <!-- Statistics cards -->
+    <div class="grid {% if layout_size == 'full' or layout_size == 'half-horizontal' %}grid--cols-2{% else %}grid--cols-1{% endif %}">
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <div class="w--14 h--1.5 mb--2 bg--black" style="border-radius: 20px;"></div>
+          <span class="value value--tnums">{{ monthly_downloads | round }}</span>
+          <span class="label">Monthly Downloads</span>
+        </div>
+      </div>
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <div class="w--14 h--1.5 mb--2 bg--gray-3"></div>
+          <span class="value value--tnums">{{ weekly_avg | round }}</span>
+          <span class="label">Weekly Average</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="border--h-5 w--full"></div>
+
+    <!-- Chart container -->
+    <div id="op3-episode-chart" class="w--full"></div>
+
+    <script type="text/javascript">
+      // Process episode data for chart
+      var episodeLabels = [];
+      var downloads1d = [];
+      var downloads3d = [];
+      var downloads7d = [];
+      var downloads30d = [];
+      var downloadsAll = [];
+
+      {% for episode in episodes %}
+        {% assign title = episode.title | truncate: 40, "..." %}
+        episodeLabels.push("{{ title | escape }}");
+        downloads1d.push({{ episode.downloads1 | default: 0 }});
+        downloads3d.push({{ episode.downloads3 | default: 0 }});
+        downloads7d.push({{ episode.downloads7 | default: 0 }});
+        downloads30d.push({{ episode.downloads30 | default: 0 }});
+        downloadsAll.push({{ episode.downloadsAll | default: 0 }});
+      {% endfor %}
+
+      // Format data for Highcharts
+      var chartData = [];
+      for (var i = 0; i < episodeLabels.length; i++) {
+        chartData.push([episodeLabels[i], downloadsAll[i]]);
+      }
+
+      var chartData7d = [];
+      for (var i = 0; i < episodeLabels.length; i++) {
+        chartData7d.push([episodeLabels[i], downloads7d[i]]);
+      }
+
+      var chartData30d = [];
+      for (var i = 0; i < episodeLabels.length; i++) {
+        chartData30d.push([episodeLabels[i], downloads30d[i]]);
+      }
+
+      // Initialize chart
+      Highcharts.chart("op3-episode-chart", {
+        chart: {
+          type: "column",
+          height: null,
+          width: null,
+          animation: false,
+          spacing: [10, 10, 5, 10]
+        },
+        title: {
+          text: null
+        },
+        plotOptions: {
+          series: {
+            animation: false,
+            enableMouseTracking: false,
+            states: {
+              hover: { enabled: false }
+            },
+            pointPadding: 0.05,
+            groupPadding: 0.1,
+            borderWidth: 0
+          }
+        },
+        series: [{
+          data: chartData,
+          color: "#000000",
+          name: "All Time",
+          zIndex: 3
+        }, {
+          data: chartData30d,
+          name: "30 Days",
+          zIndex: 2,
+          color: {
+            pattern: {
+              image: "https://usetrmnl.com/images/grayscale/gray-3.png",
+              width: 12,
+              height: 12
+            }
+          }
+        }, {
+          data: chartData7d,
+          name: "7 Days",
+          zIndex: 1,
+          color: {
+            pattern: {
+              image: "https://usetrmnl.com/images/grayscale/gray-5.png",
+              width: 12,
+              height: 12
+            }
+          }
+        }],
+        tooltip: { enabled: false },
+        legend: { enabled: false },
+        yAxis: {
+          labels: {
+            style: {
+              fontSize: "{% if layout_size == 'quadrant' %}12px{% else %}16px{% endif %}",
+              color: "#000000"
+            }
+          },
+          gridLineDashStyle: "shortdot",
+          gridLineWidth: 1,
+          gridLineColor: "#000000",
+          tickAmount: {% if layout_size == 'quadrant' or layout_size == 'half-vertical' %}3{% else %}5{% endif %},
+          title: {
+            text: null
+          }
+        },
+        xAxis: {
+          type: "category",
+          labels: {
+            style: {
+              fontSize: "{% if layout_size == 'quadrant' %}10px{% elsif layout_size == 'half-vertical' %}12px{% else %}14px{% endif %}",
+              color: "#000000"
+            },
+            padding: 5,
+            y: 25,
+            rotation: {% if layout_size == 'quadrant' or layout_size == 'half-vertical' %}-45{% else %}0{% endif %}
+          },
+          lineWidth: 0,
+          gridLineDashStyle: "dot",
+          tickWidth: 0,
+          tickLength: 0,
+          gridLineWidth: 1,
+          gridLineColor: "#000000",
+          title: {
+            text: null
+          }
+        },
+        credits: {
+          enabled: false
+        }
+      });
+    </script>
+  </div>
+</div>
+{% endtemplate %}
