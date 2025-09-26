@@ -77,23 +77,27 @@ Parameters:
         downloadsAll.push({{ episode.downloadsAll | default: 0 }});
       {% endfor %}
 
-      // Format data for Highcharts
-      var chartData = [];
+      // Calculate incremental downloads for stacked chart
+      var data1d = [];
+      var data3to1d = [];
+      var data7to3d = [];
+      var dataAllto7d = [];
+
       for (var i = 0; i < episodeLabels.length; i++) {
-        chartData.push([episodeLabels[i], downloadsAll[i]]);
+        // First day downloads
+        data1d.push(downloads1d[i]);
+
+        // Downloads from day 1 to 3 (3d total minus 1d)
+        data3to1d.push(Math.max(0, downloads3d[i] - downloads1d[i]));
+
+        // Downloads from day 3 to 7 (7d total minus 3d)
+        data7to3d.push(Math.max(0, downloads7d[i] - downloads3d[i]));
+
+        // Downloads after day 7 (All total minus 7d)
+        dataAllto7d.push(Math.max(0, downloadsAll[i] - downloads7d[i]));
       }
 
-      var chartData7d = [];
-      for (var i = 0; i < episodeLabels.length; i++) {
-        chartData7d.push([episodeLabels[i], downloads7d[i]]);
-      }
-
-      var chartData30d = [];
-      for (var i = 0; i < episodeLabels.length; i++) {
-        chartData30d.push([episodeLabels[i], downloads30d[i]]);
-      }
-
-      // Initialize chart
+      // Initialize chart with stacked columns
       Highcharts.chart("op3-episode-chart", {
         chart: {
           type: "column",
@@ -106,26 +110,25 @@ Parameters:
           text: null
         },
         plotOptions: {
-          series: {
+          column: {
+            stacking: 'normal',
             animation: false,
             enableMouseTracking: false,
             states: {
               hover: { enabled: false }
             },
-            pointPadding: 0.05,
-            groupPadding: 0.1,
+            pointPadding: 0.1,
+            groupPadding: 0.2,
             borderWidth: 0
           }
         },
         series: [{
-          data: chartData,
-          color: "#000000",
-          name: "All Time",
-          zIndex: 3
+          name: "Day 1",
+          data: data1d,
+          color: "#000000"
         }, {
-          data: chartData30d,
-          name: "30 Days",
-          zIndex: 2,
+          name: "Days 1-3",
+          data: data3to1d,
           color: {
             pattern: {
               image: "https://usetrmnl.com/images/grayscale/gray-3.png",
@@ -134,12 +137,21 @@ Parameters:
             }
           }
         }, {
-          data: chartData7d,
-          name: "7 Days",
-          zIndex: 1,
+          name: "Days 3-7",
+          data: data7to3d,
           color: {
             pattern: {
               image: "https://usetrmnl.com/images/grayscale/gray-5.png",
+              width: 12,
+              height: 12
+            }
+          }
+        }, {
+          name: "After Day 7",
+          data: dataAllto7d,
+          color: {
+            pattern: {
+              image: "https://usetrmnl.com/images/grayscale/gray-7.png",
               width: 12,
               height: 12
             }
@@ -163,7 +175,7 @@ Parameters:
           }
         },
         xAxis: {
-          type: "category",
+          categories: episodeLabels,
           labels: {
             style: {
               fontSize: "{% if layout_size == 'quadrant' %}10px{% elsif layout_size == 'half-vertical' %}12px{% else %}14px{% endif %}",
