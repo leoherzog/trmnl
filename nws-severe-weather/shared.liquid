@@ -10,7 +10,8 @@
 {% comment %} Calculate local time {% endcomment %}
 {% assign now_local = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset %}
 {% assign include_future = trmnl.plugin_settings.custom_fields_values.includefuture == 'true' %}
-{% assign updated_local = updated | date: "%s" | plus: trmnl.user.utc_offset %}
+{% assign updated_unix = updated | date: "%s" %}
+{% assign updated_local = updated_unix | plus: trmnl.user.utc_offset %}
 
 {% comment %} Count alerts {% endcomment %}
 {% assign active_count = 0 %}
