@@ -179,9 +179,9 @@
 
   <span class="label label--small label--underline">
     {% if show_datetime %}
-      {{ onset_local | date: mask_datetime, trmnl.user.locale }} – {{ ends_local | date: mask_datetime, trmnl.user.locale }}
+      {{ onset_local | date: mask_datetime }} – {{ ends_local | date: mask_datetime }}
     {% else %}
-      {{ onset_local | date: mask_time, trmnl.user.locale }} – {{ ends_local | date: mask_time, trmnl.user.locale }}
+      {{ onset_local | date: mask_time }} – {{ ends_local | date: mask_time }}
     {% endif %}
   </span>
 </div>
@@ -201,7 +201,7 @@
   <img class="image image--dither" src="https://www.weather.gov/images/nws/nws_logo.png">
   <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
   <span class="instance">
-    Updated {{ updated_local | date: mask_datetime, trmnl.user.locale }}
+    Updated {{ updated_local | date: mask_datetime }}
   </span>
 </div>
 {% endtemplate %}
