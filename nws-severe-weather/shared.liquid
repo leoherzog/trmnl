@@ -10,8 +10,6 @@
 {% comment %} Calculate local time {% endcomment %}
 {% assign now_local = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset %}
 {% assign include_future = trmnl.plugin_settings.custom_fields_values.includefuture == 'true' %}
-{% assign updated_unix = updated | date: "%s" %}
-{% assign updated_local = updated_unix | plus: trmnl.user.utc_offset %}
 
 {% comment %} Count alerts {% endcomment %}
 {% assign active_count = 0 %}
@@ -38,15 +36,14 @@
         <span class="label">Active</span>
         {% if active_count == 0 %}
           <span class="label dim">No Active Alerts</span>
-        {% else %}
-          {% for alert in features %}
-            {% assign onset_local = alert.properties.onset | date: "%s" | plus: trmnl.user.utc_offset %}
-            {% assign ends_local = alert.properties.ends | date: "%s" | plus: trmnl.user.utc_offset %}
-            {% if now_local >= onset_local and now_local <= ends_local %}
-              {% render 'alert_item', alert: alert, show_time: true %}
-            {% endif %}
-          {% endfor %}
         {% endif %}
+        {% for alert in features %}
+          {% assign onset_local = alert.properties.onset | date: "%s" | plus: trmnl.user.utc_offset %}
+          {% assign ends_local = alert.properties.ends | date: "%s" | plus: trmnl.user.utc_offset %}
+          {% if now_local >= onset_local and now_local <= ends_local %}
+            {% render 'alert_item', alert: alert, show_time: true %}
+          {% endif %}
+        {% endfor %}
       </div>
 
       {% comment %} Upcoming alerts column {% endcomment %}
@@ -55,14 +52,13 @@
           <span class="label">Upcoming</span>
           {% if upcoming_count == 0 %}
             <span class="label dim">No Upcoming Alerts</span>
-          {% else %}
-            {% for alert in features %}
-              {% assign onset_local = alert.properties.onset | date: "%s" | plus: trmnl.user.utc_offset %}
-              {% if onset_local > now_local %}
-                {% render 'alert_item', alert: alert, show_datetime: true %}
-              {% endif %}
-            {% endfor %}
           {% endif %}
+          {% for alert in features %}
+            {% assign onset_local = alert.properties.onset | date: "%s" | plus: trmnl.user.utc_offset %}
+            {% if onset_local > now_local %}
+              {% render 'alert_item', alert: alert, show_datetime: true %}
+            {% endif %}
+          {% endfor %}
         </div>
       {% endif %}
     </div>
@@ -198,11 +194,20 @@
 
 {% comment %} Title bar template {% endcomment %}
 {% template title_bar %}
+{% if trmnl.plugin_settings.custom_fields_values.timemode == '24_hour' %}
+  {% assign mask_update = '%-m/%-d %H:%M' %}
+{% else %}
+  {% assign mask_update = '%-m/%-d %-I:%M%P' %}
+{% endif %}
 <div class="title_bar">
   <img class="image image--dither" src="https://www.weather.gov/images/nws/nws_logo.png">
   <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
   <span class="instance">
-    Updated {{ updated_local | date: mask_datetime }}
+    {% if updated %}
+      Updated {{ updated | date: mask_update }}
+    {% else %}
+      Updated
+    {% endif %}
   </span>
 </div>
 {% endtemplate %}
