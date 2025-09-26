@@ -68,8 +68,7 @@ Parameters:
       var downloadsAll = [];
 
       {% for episode in episodes %}
-        {% assign title = episode.title | truncate: 40, "..." %}
-        episodeLabels.push("{{ title | escape }}");
+        episodeLabels.push("{{ episode.title | escape }}");
         downloads1d.push({{ episode.downloads1 | default: 0 }});
         downloads3d.push({{ episode.downloads3 | default: 0 }});
         downloads7d.push({{ episode.downloads7 | default: 0 }});
@@ -179,8 +178,11 @@ Parameters:
           labels: {
             style: {
               fontSize: "{% if layout_size == 'quadrant' %}10px{% elsif layout_size == 'half-vertical' %}12px{% else %}14px{% endif %}",
-              color: "#000000"
+              color: "#000000",
+              textOverflow: "none",
+              whiteSpace: "nowrap"
             },
+            overflow: "allow",
             padding: 5,
             y: 25,
             rotation: {% if layout_size == 'quadrant' or layout_size == 'half-vertical' %}-45{% else %}0{% endif %}
