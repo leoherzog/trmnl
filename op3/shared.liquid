@@ -180,12 +180,11 @@ Parameters:
               fontSize: "{% if layout_size == 'quadrant' %}10px{% elsif layout_size == 'half-vertical' %}12px{% else %}14px{% endif %}",
               color: "#000000",
               textOverflow: "none",
-              whiteSpace: "nowrap"
+              width: "{% if layout_size == 'quadrant' %}60px{% elsif layout_size == 'half-vertical' %}80px{% else %}120px{% endif %}"
             },
-            overflow: "allow",
             padding: 5,
             y: 25,
-            rotation: {% if layout_size == 'quadrant' or layout_size == 'half-vertical' %}-45{% else %}0{% endif %}
+            rotation: {% if layout_size == 'quadrant' or layout_size == 'half-vertical' %}-45{% else %}-25{% endif %}
           },
           lineWidth: 0,
           gridLineDashStyle: "dot",
