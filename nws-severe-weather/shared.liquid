@@ -22,7 +22,7 @@
 
   {% if now_local >= onset_local and now_local <= ends_local %}
     {% assign active_count = active_count | plus: 1 %}
-  {% elsif onset_local > now_local %}
+  {% elsif onset_local > now_local and include_future %}
     {% assign upcoming_count = upcoming_count | plus: 1 %}
   {% endif %}
 {% endfor %}
