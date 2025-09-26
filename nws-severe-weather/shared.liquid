@@ -1,0 +1,370 @@
+{% comment %} ================================================================
+GLOBAL VARIABLES & UTILITIES
+Used across all templates and layouts
+================================================================ {% endcomment %}
+
+{% comment %} Time format masks based on user preference {% endcomment %}
+{% if trmnl.plugin_settings.custom_fields_values.timemode == '24_hour' %}
+  {% assign mask_time = '%H:%M' %}
+  {% assign mask_datetime = '%-m/%-d %H:%M' %}
+  {% assign mask_short_date = '%-m/%-d' %}
+{% else %}
+  {% assign mask_time = '%-I:%M%P' %}
+  {% assign mask_datetime = '%-m/%-d %-I:%M%P' %}
+  {% assign mask_short_date = '%-m/%-d' %}
+{% endif %}
+
+{% comment %} Calculate local time and settings {% endcomment %}
+{% assign now_local = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset %}
+{% assign include_future = trmnl.plugin_settings.custom_fields_values.includefuture == 'true' %}
+{% assign updated_local = updated | date: "%s" | plus: trmnl.user.utc_offset %}
+
+{% comment %} Count active and upcoming alerts {% endcomment %}
+{% assign active_alerts = '' | split: ',' %}
+{% assign upcoming_alerts = '' | split: ',' %}
+
+{% for alert in features %}
+  {% assign onset_local = alert.properties.onset | date: "%s" | plus: trmnl.user.utc_offset %}
+  {% assign ends_local = alert.properties.ends | date: "%s" | plus: trmnl.user.utc_offset %}
+
+  {% if now_local >= onset_local and now_local <= ends_local %}
+    {% assign active_alerts = active_alerts | push: alert %}
+  {% elsif onset_local > now_local and include_future %}
+    {% assign upcoming_alerts = upcoming_alerts | push: alert %}
+  {% endif %}
+{% endfor %}
+
+{% assign active_count = active_alerts | size %}
+{% assign upcoming_count = upcoming_alerts | size %}
+
+{% comment %} ================================================================
+MAIN CONTENT TEMPLATE
+Orchestrates the display based on layout size
+================================================================ {% endcomment %}
+
+{% template main_content %}
+{% comment %}
+Main content template that adapts to different layout sizes
+Parameters:
+- layout_size: 'full', 'half-horizontal', 'half-vertical', or 'quadrant'
+- features: Array of alert features from NWS API
+- trmnl: TRMNL system object
+{% endcomment %}
+
+{% if layout_size == 'full' %}
+  {% render 'alerts_container_full' %}
+{% elsif layout_size == 'half-horizontal' %}
+  {% render 'alerts_container_half_horizontal' %}
+{% elsif layout_size == 'half-vertical' %}
+  {% render 'alerts_container_half_vertical' %}
+{% elsif layout_size == 'quadrant' %}
+  {% render 'alerts_container_quadrant' %}
+{% endif %}
+
+{% endtemplate %}
+
+{% comment %} ================================================================
+FULL LAYOUT CONTAINER
+Two-column layout for active and upcoming alerts
+================================================================ {% endcomment %}
+
+{% template alerts_container_full %}
+<div class="view view--full">
+  <div class="grid grid--cols-2 gap--medium h--full">
+
+    {% comment %} Active alerts column {% endcomment %}
+    <div class="flex flex--col gap--small">
+      <span class="label">Active Alerts</span>
+      {% if active_count == 0 %}
+        {% render 'no_alerts_card', type: 'active' %}
+      {% else %}
+        <div class="flex flex--col gap--small" style="max-height: 340px; overflow-y: auto;">
+          {% for alert in active_alerts %}
+            {% render 'alert_item', alert: alert, layout_size: 'full', time_format: 'time_only' %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Upcoming alerts column {% endcomment %}
+    {% if include_future %}
+      <div class="flex flex--col gap--small">
+        <span class="label">Upcoming Alerts</span>
+        {% if upcoming_count == 0 %}
+          {% render 'no_alerts_card', type: 'upcoming' %}
+        {% else %}
+          <div class="flex flex--col gap--small" style="max-height: 340px; overflow-y: auto;">
+            {% for alert in upcoming_alerts %}
+              {% render 'alert_item', alert: alert, layout_size: 'full', time_format: 'datetime' %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endtemplate %}
+
+{% comment %} ================================================================
+HALF HORIZONTAL LAYOUT CONTAINER
+Side-by-side compact view
+================================================================ {% endcomment %}
+
+{% template alerts_container_half_horizontal %}
+<div class="view w--full h--full">
+  <div class="flex flex--row gap--medium h--full">
+
+    {% comment %} Active alerts {% endcomment %}
+    <div class="flex flex--col gap--small stretch">
+      <span class="label label--small">Active</span>
+      {% if active_count == 0 %}
+        <span class="label label--small dim">No active alerts</span>
+      {% else %}
+        <div class="flex flex--col gap--small">
+          {% for alert in active_alerts limit: 3 %}
+            {% render 'alert_item_compact', alert: alert %}
+          {% endfor %}
+          {% if active_count > 3 %}
+            <span class="label label--small dim">+{{ active_count | minus: 3 }} more</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Upcoming alerts {% endcomment %}
+    {% if include_future %}
+      <div class="flex flex--col gap--small stretch">
+        <span class="label label--small">Upcoming</span>
+        {% if upcoming_count == 0 %}
+          <span class="label label--small dim">No upcoming alerts</span>
+        {% else %}
+          <div class="flex flex--col gap--small">
+            {% for alert in upcoming_alerts limit: 2 %}
+              {% render 'alert_item_compact', alert: alert %}
+            {% endfor %}
+            {% if upcoming_count > 2 %}
+              <span class="label label--small dim">+{{ upcoming_count | minus: 2 }} more</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endtemplate %}
+
+{% comment %} ================================================================
+HALF VERTICAL LAYOUT CONTAINER
+Stacked view with active above upcoming
+================================================================ {% endcomment %}
+
+{% template alerts_container_half_vertical %}
+<div class="view w--full h--full">
+  <div class="flex flex--col gap--medium h--full">
+
+    {% comment %} Active alerts section {% endcomment %}
+    <div class="flex flex--col gap--small">
+      <span class="label">Active Alerts</span>
+      {% if active_count == 0 %}
+        <span class="label label--small dim">No active alerts</span>
+      {% else %}
+        <div class="flex flex--col gap--small">
+          {% for alert in active_alerts limit: 2 %}
+            {% render 'alert_item', alert: alert, layout_size: 'half-vertical', time_format: 'time_only' %}
+          {% endfor %}
+          {% if active_count > 2 %}
+            <span class="label label--small dim">+{{ active_count | minus: 2 }} more active</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% comment %} Upcoming alerts section {% endcomment %}
+    {% if include_future and upcoming_count > 0 %}
+      <div class="flex flex--col gap--small">
+        <span class="label">Upcoming Alerts</span>
+        <div class="flex flex--col gap--small">
+          {% for alert in upcoming_alerts limit: 2 %}
+            {% render 'alert_item', alert: alert, layout_size: 'half-vertical', time_format: 'datetime' %}
+          {% endfor %}
+          {% if upcoming_count > 2 %}
+            <span class="label label--small dim">+{{ upcoming_count | minus: 2 }} more upcoming</span>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endtemplate %}
+
+{% comment %} ================================================================
+QUADRANT LAYOUT CONTAINER
+Most compact view for quarter screen
+================================================================ {% endcomment %}
+
+{% template alerts_container_quadrant %}
+<div class="view w--full h--full">
+  <div class="flex flex--col gap--small h--full flex--center-y">
+
+    {% if active_count > 0 %}
+      {% comment %} Show most severe active alert {% endcomment %}
+      {% assign most_severe = active_alerts | first %}
+      <div class="flex flex--col gap--small text--center">
+        <span class="label label--small">Active Now</span>
+        <span class="title title--small">{{ most_severe.properties.event }}</span>
+        <span class="label label--small label--inverted">{{ most_severe.properties.severity }}</span>
+        {% if active_count > 1 %}
+          <span class="label label--small dim">+{{ active_count | minus: 1 }} more</span>
+        {% endif %}
+      </div>
+    {% elsif upcoming_count > 0 and include_future %}
+      {% comment %} Show next upcoming alert {% endcomment %}
+      {% assign next_alert = upcoming_alerts | first %}
+      {% assign onset_local = next_alert.properties.onset | date: "%s" | plus: trmnl.user.utc_offset %}
+      <div class="flex flex--col gap--small text--center">
+        <span class="label label--small">Coming Soon</span>
+        <span class="title title--small">{{ next_alert.properties.event }}</span>
+        <span class="label label--small">{{ onset_local | date: mask_short_date, trmnl.user.locale }}</span>
+      </div>
+    {% else %}
+      {% comment %} No alerts {% endcomment %}
+      <div class="flex flex--col gap--small text--center">
+        <span class="title title--medium">No Alerts</span>
+        <span class="label label--small dim">All clear</span>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endtemplate %}
+
+{% comment %} ================================================================
+ALERT ITEM TEMPLATE
+Renders individual alert with full details
+================================================================ {% endcomment %}
+
+{% template alert_item %}
+{% comment %}
+Renders a single alert item
+Parameters:
+- alert: Alert object from NWS API
+- layout_size: Current layout size
+- time_format: 'time_only' or 'datetime'
+{% endcomment %}
+
+{% assign onset_local = alert.properties.onset | date: "%s" | plus: trmnl.user.utc_offset %}
+{% assign ends_local = alert.properties.ends | date: "%s" | plus: trmnl.user.utc_offset %}
+
+<div class="flex flex--col gap--small bg--white rounded--medium p--2">
+  <div class="flex flex--row flex--space-between">
+    <span class="title title--small">{{ alert.properties.event }}</span>
+    <span class="label label--small label--inverted">{{ alert.properties.severity }}</span>
+  </div>
+
+  {% if layout_size == 'full' or layout_size == 'half-vertical' %}
+    <span class="label label--small" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+      {{ alert.properties.description }}
+    </span>
+  {% endif %}
+
+  <div class="flex flex--row gap--small">
+    <span class="label label--small label--underline">
+      {% if time_format == 'datetime' %}
+        {{ onset_local | date: mask_datetime, trmnl.user.locale }} – {{ ends_local | date: mask_datetime, trmnl.user.locale }}
+      {% else %}
+        {{ onset_local | date: mask_time, trmnl.user.locale }} – {{ ends_local | date: mask_time, trmnl.user.locale }}
+      {% endif %}
+    </span>
+  </div>
+</div>
+
+{% endtemplate %}
+
+{% comment %} ================================================================
+COMPACT ALERT ITEM TEMPLATE
+Minimal alert display for space-constrained layouts
+================================================================ {% endcomment %}
+
+{% template alert_item_compact %}
+{% comment %}
+Renders a compact alert item
+Parameters:
+- alert: Alert object from NWS API
+{% endcomment %}
+
+<div class="flex flex--col gap--small bg--white rounded--medium p--1">
+  <span class="title title--small">{{ alert.properties.event }}</span>
+  <span class="label label--small label--inverted">{{ alert.properties.severity }}</span>
+</div>
+
+{% endtemplate %}
+
+{% comment %} ================================================================
+NO ALERTS CARD TEMPLATE
+Empty state display
+================================================================ {% endcomment %}
+
+{% template no_alerts_card %}
+{% comment %}
+Shows empty state when no alerts
+Parameters:
+- type: 'active' or 'upcoming'
+{% endcomment %}
+
+<div class="flex flex--col flex--center-x flex--center-y h--full">
+  <span class="label dim">
+    {% if type == 'active' %}
+      No active alerts
+    {% else %}
+      No upcoming alerts
+    {% endif %}
+  </span>
+</div>
+
+{% endtemplate %}
+
+{% comment %} ================================================================
+TITLE BAR TEMPLATE
+NWS branding and update timestamp
+================================================================ {% endcomment %}
+
+{% template title_bar %}
+{% comment %}
+Title bar with NWS branding
+Parameters:
+- layout_size: Current layout size
+- updated: Last update timestamp
+{% endcomment %}
+
+<div class="title_bar">
+  {% comment %} NWS Logo SVG {% endcomment %}
+  <svg class="image image-stroke image--dither" width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="45" fill="none" stroke="black" stroke-width="2"/>
+    <text x="50" y="35" text-anchor="middle" font-family="Arial" font-size="20" font-weight="bold">NWS</text>
+    <path d="M 30 50 Q 50 40, 70 50 T 70 60" fill="none" stroke="black" stroke-width="2"/>
+    <circle cx="35" cy="65" r="2" fill="black"/>
+    <circle cx="50" cy="68" r="2" fill="black"/>
+    <circle cx="65" cy="65" r="2" fill="black"/>
+  </svg>
+
+  <span class="title">
+    {% if layout_size == 'quadrant' %}
+      Alerts
+    {% else %}
+      {{ trmnl.plugin_settings.instance_name | default: 'Weather Alerts' }}
+    {% endif %}
+  </span>
+
+  <span class="instance">
+    {% if layout_size == 'quadrant' %}
+      {{ updated_local | date: mask_time, trmnl.user.locale }}
+    {% else %}
+      Updated {{ updated_local | date: mask_datetime, trmnl.user.locale }}
+    {% endif %}
+  </span>
+</div>
+
+{% endtemplate %}
