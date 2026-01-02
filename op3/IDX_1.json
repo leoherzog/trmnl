@@ -1,0 +1,18 @@
+{
+  "asof": "2025-12-31",
+  "queryTime": 158,
+  "showDownloadCounts": {
+    "76d7462d75f547cdbf726bac959ba1d2": {
+      "days": "111110111111111111111111101111",
+      "numWeeks": 4,
+      "weeklyDownloads": [
+        151,
+        83,
+        36,
+        72
+      ],
+      "monthlyDownloads": 376,
+      "weeklyAvgDownloads": 86
+    }
+  }
+}

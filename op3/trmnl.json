@@ -1,0 +1,33 @@
+{
+  "user": {
+    "id": 2192,
+    "name": "Leo Herzog",
+    "first_name": "Leo",
+    "last_name": "Herzog",
+    "locale": "en",
+    "time_zone": "Eastern Time (US & Canada)",
+    "time_zone_iana": "America/New_York",
+    "utc_offset": -18000
+  },
+  "device": {
+    "friendly_id": "4785C1",
+    "percent_charged": 72.5,
+    "wifi_strength": 60,
+    "height": 480,
+    "width": 800
+  },
+  "system": {
+    "timestamp_utc": 1767324093
+  },
+  "plugin_settings": {
+    "instance_name": "OP3 Podcast Analytics",
+    "strategy": "polling",
+    "dark_mode": "no",
+    "no_screen_padding": "no",
+    "polling_headers": "authorization=bearer AnSpfxdx7qaC6NETPDMmamj9uGvgTUoW19aBk2LMUcSv",
+    "polling_url": "https://op3.dev/api/1/queries/episode-download-counts?showUuid={{ uuid }}\r\nhttps://op3.dev/api/1/queries/show-download-counts?showUuid={{ uuid }}",
+    "custom_fields_values": {
+      "uuid": ""
+    }
+  }
+}

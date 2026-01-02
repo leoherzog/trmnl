@@ -1,0 +1,52 @@
+{
+  "episodes": [
+    {
+      "title": "Party in a Box, Theranos for Bread, Interactive Kids Theatre, and Self-Returning Shopping Carts",
+      "pubdate": "2025-12-29T11:00:00.000Z",
+      "itemGuid": "9b086e3a-2d26-4392-af91-3cb4a40a752e",
+      "downloads1": 46,
+      "downloadsAll": 55
+    },
+    {
+      "title": "Gamified Decibel Meters, Backseat Trip Visualizers, Business in a Box, and Wedding Day Planner Apps",
+      "pubdate": "2025-12-15T11:00:00.000Z",
+      "itemGuid": "dcb8bdec-b45a-4fe8-939a-ecd88e4d282d",
+      "downloads1": 50,
+      "downloads3": 61,
+      "downloads7": 70,
+      "downloadsAll": 84
+    },
+    {
+      "title": "Kill-o-Weight, Recipe Documentation Cameras, Smart Ducts, and Personalized Book Revisions",
+      "pubdate": "2025-12-01T11:00:00.000Z",
+      "itemGuid": "fce6491a-ad58-4bff-ae46-edd156049877",
+      "downloads1": 57,
+      "downloads3": 66,
+      "downloads7": 79,
+      "downloadsAll": 102
+    },
+    {
+      "title": "AI Subscription Management, Flavor Chemists as a Service, Drunk Uber, and The I.B.M.",
+      "pubdate": "2025-11-17T11:00:00.000Z",
+      "itemGuid": "79186072-9790-496b-ac78-620843da6a87",
+      "downloads1": 61,
+      "downloads3": 71,
+      "downloadsAll": 77
+    },
+    {
+      "title": "Car Trunk Hot Plates, Free Test Vending Machines, Uber for Drones, and 360° Home Cameras",
+      "pubdate": "2025-11-03T11:00:00.000Z",
+      "itemGuid": "f07d986a-e4d1-4ade-bc0c-d6085a77e59c",
+      "downloads1": 60,
+      "downloads3": 73,
+      "downloads7": 89,
+      "downloads30": 117,
+      "downloadsAll": 120
+    }
+  ],
+  "showUuid": "76d7462d75f547cdbf726bac959ba1d2",
+  "queryTime": 184,
+  "showTitle": "Spitball — Startup Ideas on Tap",
+  "maxDownloadHour": "2025-12-31T20",
+  "minDownloadHour": "2025-11-03T11"
+}
