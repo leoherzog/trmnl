@@ -1,0 +1,12 @@
+{
+  "name": "bandcamp-aotd",
+  "main": "src/index.js",
+  "compatibility_date": "2026-02-24",
+  "preview_urls": false,
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "hostname": "daily.bandcamp.com"
+  }
+}
