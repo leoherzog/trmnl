@@ -5,7 +5,7 @@
   </svg>
   <span class="title">{{ trmnl.plugin_settings.instance_name }}</span>
   {% if showInstance %}
-  <span class="instance">{{ IDX_0.showTitle }}</span>
+  <span class="instance" data-clamp="1">{{ IDX_0.showTitle }}</span>
   {% endif %}
 </div>
 {% endtemplate %}
@@ -28,21 +28,20 @@ Parameters:
 {% assign episodes = IDX_0.episodes | slice: 0, 5 %}
 
 <!-- Import Highcharts library -->
-<script src="https://usetrmnl.com/js/highcharts/12.3.0/highcharts.js"></script>
-<script src="https://usetrmnl.com/js/highcharts/12.3.0/pattern-fill.js"></script>
+<script src="https://trmnl.com/js/highcharts/12.3.0/highcharts.js"></script>
+<script src="https://trmnl.com/js/highcharts/12.3.0/pattern-fill.js"></script>
 
-<div class="view">
-  <div class="layout layout--col gap--space-between">
+<div class="layout layout--col gap--space-between lg:gap--large">
     <!-- Statistics cards -->
     {% if layout_size == 'quadrant' or layout_size == 'half-vertical' %}
     <div class="flex justify--space-between">
       <div class="flex flex--col items--start">
-        <span class="title title--tnums">{{ monthly_downloads | round }}</span>
-        <span class="label label--small">Monthly</span>
+        <span class="title title--tnums lg:title--large">{{ monthly_downloads | round }}</span>
+        <span class="label label--small lg:label--base">Monthly</span>
       </div>
       <div class="flex flex--col items--end">
-        <span class="title title--tnums">{{ weekly_avg | round }}</span>
-        <span class="label label--small">Wkly Avg</span>
+        <span class="title title--tnums lg:title--large">{{ weekly_avg | round }}</span>
+        <span class="label label--small lg:label--base">Wkly Avg</span>
       </div>
     </div>
     {% else %}
@@ -51,16 +50,16 @@ Parameters:
         <div class="meta"></div>
         <div class="content">
           <div class="w--14 h--1.5 mb--2 bg--black" style="border-radius: 20px;"></div>
-          <span class="value value--tnums">{{ monthly_downloads | round }}</span>
-          <span class="label">Monthly Downloads</span>
+          <span class="value value--tnums lg:value--large">{{ monthly_downloads | round }}</span>
+          <span class="label lg:label--large">Monthly Downloads</span>
         </div>
       </div>
       <div class="item">
         <div class="meta"></div>
         <div class="content">
           <div class="w--14 h--1.5 mb--2 bg--gray-3"></div>
-          <span class="value value--tnums">{{ weekly_avg | round }}</span>
-          <span class="label">Weekly Average</span>
+          <span class="value value--tnums lg:value--large">{{ weekly_avg | round }}</span>
+          <span class="label lg:label--large">Weekly Average</span>
         </div>
       </div>
     </div>
@@ -69,10 +68,11 @@ Parameters:
     {% endif %}
 
     <!-- Chart container -->
-    <div id="op3-episode-chart" class="w--full"></div>
+    {% assign chartId = "op3-chart-" | append_random %}
+    <div id="{{ chartId }}" class="w--full"></div>
 
     <script type="text/javascript">
-      // Process episode data for chart
+      (function() {
       var episodeLabels = [];
       var downloads1d = [];
       var downloads3d = [];
@@ -88,8 +88,7 @@ Parameters:
         downloadsAll.push({{ episode.downloadsAll | default: 0 }});
       {% endfor %}
 
-      // Initialize chart with overlapping columns (layered, not stacked)
-      Highcharts.chart("op3-episode-chart", {
+      Highcharts.chart("{{ chartId }}", {
         chart: {
           type: "{% if layout_size == 'half-vertical' %}bar{% else %}column{% endif %}",
           height: null,
@@ -124,7 +123,7 @@ Parameters:
           zIndex: 2,
           color: {
             pattern: {
-              image: "https://usetrmnl.com/images/grayscale/gray-3.png",
+              image: "https://trmnl.com/images/grayscale/gray-3.png",
               width: 12,
               height: 12
             }
@@ -136,7 +135,7 @@ Parameters:
           zIndex: 3,
           color: {
             pattern: {
-              image: "https://usetrmnl.com/images/grayscale/gray-5.png",
+              image: "https://trmnl.com/images/grayscale/gray-5.png",
               width: 12,
               height: 12
             }
@@ -148,7 +147,7 @@ Parameters:
           zIndex: 4,
           color: {
             pattern: {
-              image: "https://usetrmnl.com/images/grayscale/gray-7.png",
+              image: "https://trmnl.com/images/grayscale/gray-7.png",
               width: 12,
               height: 12
             }
@@ -159,7 +158,7 @@ Parameters:
         yAxis: {
           labels: {
             style: {
-              fontSize: "{% if layout_size == 'quadrant' %}12px{% else %}16px{% endif %}",
+              fontSize: "{% if layout_size == 'quadrant' %}12px{% elsif layout_size == 'half-vertical' %}14px{% else %}16px{% endif %}",
               color: "#000000"
             }
           },
@@ -196,7 +195,7 @@ Parameters:
           enabled: false
         }
       });
+    })();
     </script>
-  </div>
 </div>
 {% endtemplate %}
