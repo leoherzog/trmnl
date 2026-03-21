@@ -4,6 +4,7 @@ Main template for displaying people locations
 Parameters:
 - people: Array of person objects with name, zone, entity_id, and zone_icon
 - columns: Number of columns (1 or 2)
+- lg_columns: Optional column count override for lg breakpoint (TRMNL X)
 - size: Optional size modifier ("small" for compact display)
 {% endcomment %}
 
@@ -16,13 +17,13 @@ Parameters:
 {% else %}
   {% comment %} Determine grid columns based on layout {% endcomment %}
   {% if columns == 2 %}
-    <div class="grid grid--cols-2 gap--medium h--full">
+    <div class="grid grid--cols-2 {% if lg_columns == 3 %}lg:grid--cols-3{% endif %} gap--medium lg:gap--large h--full">
   {% else %}
-    <div class="grid grid--cols-1 gap--small h--full">
+    <div class="grid grid--cols-1 {% if lg_columns == 2 %}lg:grid--cols-2{% endif %} gap--small lg:gap--medium h--full">
   {% endif %}
     {% for person in people %}
       <div class="flex flex--col flex--center">
-        <div class="label label--outline {% if size == 'small' %} label--small {% else %} px--2 py--1 {% endif %}">
+        <div class="label label--outline {% if size == 'small' %} label--small lg:label--base {% else %} lg:label--large px--2 py--1 {% endif %}">
           {% assign icon_class = person.zone_icon | replace: ":", "-" %}
           <i class="mx--1 mdi {{ icon_class }}"></i>
           <span>
