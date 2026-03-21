@@ -20,9 +20,9 @@
 {% elsif layout_size == 'full' %}
 <div class="layout layout--row layout--stretch-y">
   <img class="image image-dither image--cover aspect--1/1 h--full rounded" src="{{ image_url }}">
-  <div class="flex flex--col flex--center-y gap--medium p--6 stretch-x">
-    <span class="title title--large lg:title--xlarge" data-clamp="3">{{ album }}</span>
-    <span class="description lg:description--large" data-clamp="2">{{ artist }}</span>
+  <div class="flex flex--col flex--center-y gap--medium lg:gap--large p--6 stretch-x">
+    <span class="title title--large lg:title--xlarge" data-clamp="3" data-clamp-lg="4">{{ album }}</span>
+    <span class="description lg:description--large" data-clamp="2" data-clamp-lg="3">{{ artist }}</span>
   </div>
 </div>
 {% render 'title_bar', trmnl: trmnl, date: date %}
@@ -30,9 +30,9 @@
 {% elsif layout_size == 'half-horizontal' %}
 <div class="layout layout--row layout--stretch-y">
   <img class="image image-dither image--cover aspect--1/1 h--full rounded" src="{{ image_url }}">
-  <div class="flex flex--col flex--center-y gap--small p--4 stretch-x">
-    <span class="title title--small md:title--base" data-clamp="2">{{ album }}</span>
-    <span class="description" data-clamp="1">{{ artist }}</span>
+  <div class="flex flex--col flex--center-y gap--small lg:gap--medium p--4 lg:p--6 stretch-x">
+    <span class="title title--small md:title--base lg:title--large" data-clamp="2" data-clamp-lg="3">{{ album }}</span>
+    <span class="description lg:description--large" data-clamp="1" data-clamp-lg="2">{{ artist }}</span>
   </div>
 </div>
 {% render 'title_bar', trmnl: trmnl, date: date %}
@@ -40,9 +40,9 @@
 {% elsif layout_size == 'half-vertical' %}
 <div class="layout layout--col">
   <img class="image image-dither image--cover aspect--1/1 w--full h--max-[60cqh]" src="{{ image_url }}">
-  <div class="flex flex--col gap--small p--4 stretch-x">
-    <span class="title title--small lg:title--base" data-clamp="2">{{ album }}</span>
-    <span class="label" data-clamp="1">{{ artist }}</span>
+  <div class="flex flex--col gap--small lg:gap--medium p--4 lg:p--6 stretch-x">
+    <span class="title title--small lg:title--base" data-clamp="2" data-clamp-lg="3">{{ album }}</span>
+    <span class="label lg:label--large" data-clamp="1" data-clamp-lg="2">{{ artist }}</span>
   </div>
 </div>
 {% render 'title_bar', trmnl: trmnl, date: date %}
