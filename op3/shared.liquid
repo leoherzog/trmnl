@@ -35,13 +35,21 @@ Parameters:
     <!-- Statistics cards -->
     {% if layout_size == 'quadrant' or layout_size == 'half-vertical' %}
     <div class="flex justify--space-between">
-      <div class="flex flex--col items--start">
-        <span class="title title--tnums lg:title--large">{{ monthly_downloads | round }}</span>
-        <span class="label label--small lg:label--base">Monthly</span>
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <div class="w--14 h--1.5 mb--2 bg--black" style="border-radius: 20px;"></div>
+          <span class="title title--tnums lg:title--large">{{ monthly_downloads | round }}</span>
+          <span class="label label--small lg:label--base">Monthly</span>
+        </div>
       </div>
-      <div class="flex flex--col items--end">
-        <span class="title title--tnums lg:title--large">{{ weekly_avg | round }}</span>
-        <span class="label label--small lg:label--base">Wkly Avg</span>
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <div class="w--14 h--1.5 mb--2 bg--gray-3"></div>
+          <span class="title title--tnums lg:title--large">{{ weekly_avg | round }}</span>
+          <span class="label label--small lg:label--base">Wkly Avg</span>
+        </div>
       </div>
     </div>
 
@@ -52,13 +60,21 @@ Parameters:
     {% assign chartId = "op3-chart-" | append_random %}
     <div class="flex gap--large" style="flex: 1; min-height: 0;">
       <div class="flex flex--col gap--large justify--center" style="flex-shrink: 0;">
-        <div class="flex flex--col items--start">
-          <span class="value value--tnums lg:value--large">{{ monthly_downloads | round }}</span>
-          <span class="label lg:label--large">Monthly</span>
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <div class="w--14 h--1.5 mb--2 bg--black" style="border-radius: 20px;"></div>
+            <span class="value value--tnums lg:value--large">{{ monthly_downloads | round }}</span>
+            <span class="label lg:label--large">Monthly</span>
+          </div>
         </div>
-        <div class="flex flex--col items--start">
-          <span class="value value--tnums lg:value--large">{{ weekly_avg | round }}</span>
-          <span class="label lg:label--large">Wkly Avg</span>
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <div class="w--14 h--1.5 mb--2 bg--gray-3"></div>
+            <span class="value value--tnums lg:value--large">{{ weekly_avg | round }}</span>
+            <span class="label lg:label--large">Wkly Avg</span>
+          </div>
         </div>
       </div>
       <div id="{{ chartId }}" style="flex: 1; min-height: 0;"></div>
