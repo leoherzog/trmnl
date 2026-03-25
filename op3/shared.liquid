@@ -44,8 +44,27 @@ Parameters:
         <span class="label label--small lg:label--base">Wkly Avg</span>
       </div>
     </div>
+
+    <!-- Chart container -->
+    {% assign chartId = "op3-chart-" | append_random %}
+    <div id="{{ chartId }}" class="w--full"></div>
+    {% elsif layout_size == 'half-horizontal' %}
+    {% assign chartId = "op3-chart-" | append_random %}
+    <div class="flex gap--large" style="flex: 1; min-height: 0;">
+      <div class="flex flex--col gap--large justify--center" style="flex-shrink: 0;">
+        <div class="flex flex--col items--start">
+          <span class="value value--tnums lg:value--large">{{ monthly_downloads | round }}</span>
+          <span class="label lg:label--large">Monthly</span>
+        </div>
+        <div class="flex flex--col items--start">
+          <span class="value value--tnums lg:value--large">{{ weekly_avg | round }}</span>
+          <span class="label lg:label--large">Wkly Avg</span>
+        </div>
+      </div>
+      <div id="{{ chartId }}" style="flex: 1; min-height: 0;"></div>
+    </div>
     {% else %}
-    <div class="grid {% if layout_size == 'full' or layout_size == 'half-horizontal' %}grid--cols-2{% else %}grid--cols-1{% endif %}">
+    <div class="grid grid--cols-2">
       <div class="item">
         <div class="meta"></div>
         <div class="content">
@@ -65,11 +84,11 @@ Parameters:
     </div>
 
     <div class="border--h-5 w--full"></div>
-    {% endif %}
 
     <!-- Chart container -->
     {% assign chartId = "op3-chart-" | append_random %}
     <div id="{{ chartId }}" class="w--full"></div>
+    {% endif %}
 
     <script type="text/javascript">
       (function() {
@@ -177,8 +196,10 @@ Parameters:
               fontSize: "{% if layout_size == 'quadrant' %}10px{% elsif layout_size == 'half-vertical' %}12px{% else %}14px{% endif %}",
               color: "#000000"
             },
+            {% unless layout_size == 'half-vertical' %}
             padding: 5,
             y: 25,
+            {% endunless %}
             rotation: 0
           },
           lineWidth: 0,
