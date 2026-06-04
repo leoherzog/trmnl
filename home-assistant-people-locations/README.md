@@ -13,7 +13,7 @@ This TRMNL plugin displays the location of people from your Home Assistant insta
 
 ### JSON Structure
 
-The plugin expects a JSON object with a `people` array. Each person object should have the following fields:
+The webhook payload is a JSON object whose top-level keys become the plugin's merge variables. Send a `people` array and a `last_update` timestamp string. Each person object should have the following fields:
 
 ```json
 {
@@ -30,9 +30,12 @@ The plugin expects a JSON object with a `people` array. Each person object shoul
       "entity_id": "person.megan_herzog",
       "zone_icon": "mdi:account-arrow-right"
     }
-  ]
+  ],
+  "last_update": "2025-08-25T17:42:14.561531-04:00"
 }
 ```
+
+> The `zone_icon` value is a [Material Design Icons](https://pictogrammer.com/library/mdi/) identifier (e.g. `mdi:home`, `mdi:account-arrow-right`). The bundled `people.example.json` and `last_update.example.json` files show the resolved value of each individual merge variable.
 
 ### Home Assistant Setup
 
