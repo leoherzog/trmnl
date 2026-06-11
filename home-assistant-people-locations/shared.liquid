@@ -11,15 +11,15 @@ Parameters:
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
 
 {% if people == nil or people.size == 0 %}
-  <div class="layout layout--col layout--center-center h--full">
+  <div class="layout layout--col layout--center h--full">
     <span class="label">No people found</span>
   </div>
 {% else %}
   {% comment %} Determine grid columns based on layout {% endcomment %}
   {% if columns == 2 %}
-    <div class="grid grid--cols-2 {% if lg_columns == 3 %}lg:grid--cols-3{% endif %} gap--medium lg:gap--large h--full">
+    <div class="grid grid--cols-2 {% if lg_columns == 3 %}lg:grid--cols-3{% endif %} gap--medium h--full">
   {% else %}
-    <div class="grid grid--cols-1 {% if lg_columns == 2 %}lg:grid--cols-2{% endif %} gap--small lg:gap--medium h--full">
+    <div class="grid grid--cols-1 {% if lg_columns == 2 %}lg:grid--cols-2{% endif %} gap--small h--full">
   {% endif %}
     {% for person in people %}
       <div class="flex flex--col flex--center">
